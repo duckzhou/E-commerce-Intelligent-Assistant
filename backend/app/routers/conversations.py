@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from typing import List
 from pydantic import BaseModel
 
-from ..database import SessionLocal, Conversation, Message
+from ..database import SessionLocal, Conversation, Message, User
+from .auth import get_current_user
 
 router = APIRouter()
 
@@ -16,11 +17,13 @@ class FeedbackRequest(BaseModel):
 
 
 @router.get("/")
-async def list_conversations() -> dict:
-    """获取会话列表（置顶的排在前面）"""
+async def list_conversations(current_user: User = Depends(get_current_user)) -> dict:
+    """获取会话列表（置顶的排在前面，按用户区分）"""
     db = SessionLocal()
     try:
-        conversations = db.query(Conversation).order_by(
+        conversations = db.query(Conversation).filter(
+            Conversation.user_id == current_user.id
+        ).order_by(
             Conversation.pinned.desc(),
             Conversation.updated_at.desc()
         ).all()
@@ -34,14 +37,15 @@ async def list_conversations() -> dict:
 
 
 @router.post("/")
-async def create_conversation(title: str = "新对话") -> dict:
+async def create_conversation(title: str = "新对话", current_user: User = Depends(get_current_user)) -> dict:
     """创建会话"""
     import uuid
     db = SessionLocal()
     try:
         conv = Conversation(
             id=str(uuid.uuid4()),
-            title=title
+            title=title,
+            user_id=current_user.id
         )
         db.add(conv)
         db.commit()
@@ -53,11 +57,14 @@ async def create_conversation(title: str = "新对话") -> dict:
 
 # 注意：具体路径路由必须放在动态路径路由之前
 @router.put("/{conversation_id}/title")
-async def update_conversation_title(conversation_id: str, request: UpdateTitleRequest) -> dict:
+async def update_conversation_title(conversation_id: str, request: UpdateTitleRequest, current_user: User = Depends(get_current_user)) -> dict:
     """更新会话标题（重命名）"""
     db = SessionLocal()
     try:
-        conv = db.query(Conversation).filter(Conversation.id == conversation_id).first()
+        conv = db.query(Conversation).filter(
+            Conversation.id == conversation_id,
+            Conversation.user_id == current_user.id
+        ).first()
         if not conv:
             return {"code": 1, "message": "会话不存在"}
         
@@ -69,11 +76,14 @@ async def update_conversation_title(conversation_id: str, request: UpdateTitleRe
 
 
 @router.put("/{conversation_id}/pin")
-async def pin_conversation(conversation_id: str) -> dict:
+async def pin_conversation(conversation_id: str, current_user: User = Depends(get_current_user)) -> dict:
     """置顶会话"""
     db = SessionLocal()
     try:
-        conv = db.query(Conversation).filter(Conversation.id == conversation_id).first()
+        conv = db.query(Conversation).filter(
+            Conversation.id == conversation_id,
+            Conversation.user_id == current_user.id
+        ).first()
         if not conv:
             return {"code": 1, "message": "会话不存在"}
         
@@ -85,11 +95,14 @@ async def pin_conversation(conversation_id: str) -> dict:
 
 
 @router.put("/{conversation_id}/unpin")
-async def unpin_conversation(conversation_id: str) -> dict:
+async def unpin_conversation(conversation_id: str, current_user: User = Depends(get_current_user)) -> dict:
     """取消置顶会话"""
     db = SessionLocal()
     try:
-        conv = db.query(Conversation).filter(Conversation.id == conversation_id).first()
+        conv = db.query(Conversation).filter(
+            Conversation.id == conversation_id,
+            Conversation.user_id == current_user.id
+        ).first()
         if not conv:
             return {"code": 1, "message": "会话不存在"}
         
@@ -101,11 +114,14 @@ async def unpin_conversation(conversation_id: str) -> dict:
 
 
 @router.get("/{conversation_id}")
-async def get_conversation(conversation_id: str) -> dict:
+async def get_conversation(conversation_id: str, current_user: User = Depends(get_current_user)) -> dict:
     """获取会话详情（包含消息列表）"""
     db = SessionLocal()
     try:
-        conv = db.query(Conversation).filter(Conversation.id == conversation_id).first()
+        conv = db.query(Conversation).filter(
+            Conversation.id == conversation_id,
+            Conversation.user_id == current_user.id
+        ).first()
         if not conv:
             raise HTTPException(status_code=404, detail="会话不存在")
         
@@ -126,11 +142,14 @@ async def get_conversation(conversation_id: str) -> dict:
 
 
 @router.delete("/{conversation_id}")
-async def delete_conversation(conversation_id: str) -> dict:
+async def delete_conversation(conversation_id: str, current_user: User = Depends(get_current_user)) -> dict:
     """删除会话"""
     db = SessionLocal()
     try:
-        conv = db.query(Conversation).filter(Conversation.id == conversation_id).first()
+        conv = db.query(Conversation).filter(
+            Conversation.id == conversation_id,
+            Conversation.user_id == current_user.id
+        ).first()
         if not conv:
             return {"code": 1, "message": "会话不存在"}
         
@@ -144,11 +163,16 @@ async def delete_conversation(conversation_id: str) -> dict:
 
 
 @router.put("/messages/{message_id}/feedback")
-async def update_message_feedback(message_id: int, request: FeedbackRequest) -> dict:
+async def update_message_feedback(message_id: int, request: FeedbackRequest, current_user: User = Depends(get_current_user)) -> dict:
     """更新消息反馈（点赞/踩）"""
     db = SessionLocal()
     try:
-        msg = db.query(Message).filter(Message.id == message_id).first()
+        msg = db.query(Message).filter(
+            Message.id == message_id,
+            Message.conversation_id.in_(
+                db.query(Conversation.id).filter(Conversation.user_id == current_user.id)
+            )
+        ).first()
         if not msg:
             return {"code": 1, "message": "消息不存在"}
         

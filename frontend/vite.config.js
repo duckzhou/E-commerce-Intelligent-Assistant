@@ -17,6 +17,10 @@ export default defineConfig(({ mode }) => {
           rewrite: (path) => path.replace(/^\/api/, ''),
           configure: (proxy, options) => {
             proxy.on('proxyReq', (proxyReq, req, res) => {
+              // 传递所有原始请求的 headers
+              if (req.headers['authorization']) {
+                proxyReq.setHeader('Authorization', req.headers['authorization']);
+              }
               if (req.headers['content-type'] && req.headers['content-type'].includes('multipart/form-data')) {
                 proxyReq.setHeader('Content-Type', req.headers['content-type']);
               }
@@ -32,7 +36,14 @@ export default defineConfig(({ mode }) => {
         },
         '/auth': {
           target: 'http://backend:8000',
-          changeOrigin: true
+          changeOrigin: true,
+          configure: (proxy, options) => {
+            proxy.on('proxyReq', (proxyReq, req, res) => {
+              if (req.headers['authorization']) {
+                proxyReq.setHeader('Authorization', req.headers['authorization']);
+              }
+            });
+          }
         }
       }
     },

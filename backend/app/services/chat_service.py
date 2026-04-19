@@ -315,7 +315,7 @@ class ChatService:
             print(f"[DEBUG] retrieved_chunks: {len(retrieved_chunks)}")
             print(f"[DEBUG] sources: {sources}")
             
-            yield f"data: {json.dumps({
+            done_data = json.dumps({
                 'type': 'done', 
                 'conversation_id': conversation_id, 
                 'message_id': assistant_msg_id, 
@@ -327,7 +327,8 @@ class ChatService:
                     'total_tokens': prompt_tokens + completion_tokens
                 },
                 'rewritten_query': rewritten_query
-            }, ensure_ascii=False)}\n\n"
+            }, ensure_ascii=False)
+            yield f"data: {done_data}\n\n"
             
         except Exception as e:
             yield f"data: {json.dumps({'type': 'error', 'message': str(e)}, ensure_ascii=False)}\n\n"

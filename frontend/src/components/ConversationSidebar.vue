@@ -60,11 +60,19 @@
         </div>
       </div>
     </div>
+
+    <!-- User info at bottom -->
+    <div class="sidebar-user">
+      <div class="user-avatar-circle">
+        <span>{{ currentUserInitial }}</span>
+      </div>
+      <span class="user-name">{{ currentUserName }}</span>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { getConversations, deleteConversation, renameConversation } from '../api'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
@@ -74,6 +82,16 @@ const conversations = ref([])
 const activeId = ref(null)
 const editingId = ref(null)
 const editingTitle = ref('')
+
+const currentUserInitial = computed(() => {
+  const user = localStorage.getItem('user')
+  return user ? JSON.parse(user).username?.charAt(0)?.toUpperCase() || 'U' : 'U'
+})
+
+const currentUserName = computed(() => {
+  const user = localStorage.getItem('user')
+  return user ? JSON.parse(user).username || '用户' : '用户'
+})
 
 const vFocus = {
   mounted: (el) => el.focus(),
@@ -319,4 +337,39 @@ defineExpose({ loadConversations })
 
 .action-btn:hover { background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.87); }
 .action-btn.delete:hover { color: var(--red); }
+
+/* User info at bottom */
+.sidebar-user {
+  padding: var(--space-16) var(--space-20);
+  border-top: 1px solid var(--border-dark-subtle);
+  display: flex;
+  align-items: center;
+  gap: var(--space-10);
+  flex-shrink: 0;
+}
+
+.user-avatar-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, #ef2cc1, #fc4c02);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-sm);
+  font-weight: var(--weight-medium);
+  color: #ffffff;
+  font-family: var(--font-family-heading);
+  flex-shrink: 0;
+}
+
+.user-name {
+  font-family: var(--font-family-body);
+  font-size: var(--font-sm);
+  color: var(--text-dark-2);
+  letter-spacing: -0.12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 </style>

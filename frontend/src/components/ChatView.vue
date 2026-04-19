@@ -145,14 +145,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Fixed user section at bottom-left -->
-  <div class="page-user">
-    <div class="user-avatar-circle">
-      <span>{{ currentUserInitial }}</span>
-    </div>
-    <span class="user-section-name">{{ currentUserName }}</span>
-  </div>
 </template>
 
 <script setup>
@@ -174,11 +166,6 @@ const messagesRef = ref(null)
 const currentUserInitial = computed(() => {
   const user = localStorage.getItem('user')
   return user ? JSON.parse(user).username?.charAt(0)?.toUpperCase() || 'U' : 'U'
-})
-
-const currentUserName = computed(() => {
-  const user = localStorage.getItem('user')
-  return user ? JSON.parse(user).username || '用户' : '用户'
 })
 
 const allQuestions = [
@@ -480,39 +467,6 @@ defineExpose({ messages })
 
 .input-bottom {
   margin-top: var(--space-12);
-}
-
-/* Fixed user section at bottom-left */
-.page-user {
-  position: absolute;
-  bottom: var(--space-24);
-  left: var(--space-24);
-  display: flex;
-  align-items: center;
-  gap: var(--space-8);
-  pointer-events: none;
-}
-
-.user-avatar-circle {
-  width: 24px;
-  height: 24px;
-  border-radius: var(--radius-sm);
-  background: linear-gradient(135deg, #ef2cc1, #fc4c02);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: var(--weight-medium);
-  color: #ffffff;
-  font-family: var(--font-family-heading);
-  flex-shrink: 0;
-}
-
-.user-section-name {
-  font-family: var(--font-family-body);
-  font-size: var(--font-sm);
-  color: var(--text-dark-3);
-  letter-spacing: -0.12px;
 }
 
 /* Messages */

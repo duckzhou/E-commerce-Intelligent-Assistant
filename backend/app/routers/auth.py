@@ -53,12 +53,19 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     """获取当前登录用户"""
     # 简化版：token 就是用户ID
     # 实际生产环境应该使用 JWT 解码
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="缺少认证令牌",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
     try:
         user_id = int(token)
     except (ValueError, TypeError):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="无效的认证令牌",
+            detail=f"无效的认证令牌格式: {token[:20] if len(token) > 20 else token}",
             headers={"WWW-Authenticate": "Bearer"},
         )
     
@@ -66,7 +73,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="无效的认证令牌",
+            detail=f"用户不存在: user_id={user_id}",
             headers={"WWW-Authenticate": "Bearer"},
         )
     return user

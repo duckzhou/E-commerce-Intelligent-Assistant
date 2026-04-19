@@ -1,0 +1,339 @@
+:root {
+  /* Surfaces — Together AI dual world */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f8fa;
+  --bg-tertiary: rgba(0, 0, 0, 0.04);
+  --bg-hover: rgba(0, 0, 0, 0.04);
+  --bg-active: rgba(0, 0, 0, 0.06);
+  --bg-input: rgba(0, 0, 0, 0.03);
+
+  /* Dark world (chat page) */
+  --surface-dark: #010120;
+  --surface-dark-hover: rgba(255, 255, 255, 0.08);
+  --surface-dark-active: rgba(255, 255, 255, 0.12);
+
+  /* Inverse surface (light card on dark) */
+  --surface-inverse: #ffffff;
+
+  /* Foreground — light world */
+  --text-1: #000000;
+  --text-2: #0000008a;
+  --text-3: #71717a;
+  --text-4: #52525b;
+  --text-5: #3f3f46;
+  --text-inverse: #000000;
+
+  /* Foreground — dark world */
+  --text-dark-1: #ffffff;
+  --text-dark-2: rgba(255, 255, 255, 0.6);
+  --text-dark-3: rgba(255, 255, 255, 0.38);
+  --text-dark-4: rgba(255, 255, 255, 0.24);
+
+  /* Borders */
+  --border-1: rgba(0, 0, 0, 0.08);
+  --border-2: rgba(0, 0, 0, 0.12);
+  --border-dark: rgba(255, 255, 255, 0.12);
+  --border-dark-subtle: rgba(255, 255, 255, 0.06);
+
+  /* Accent — Together AI brand */
+  --accent: #ef2cc1;
+  --accent-hover: #d425aa;
+  --accent-secondary: #fc4c02;
+  --accent-gradient: linear-gradient(135deg, #ef2cc1, #fc4c02);
+  --accent-soft: #bdbbff;
+  --accent-subtle: rgba(239, 44, 193, 0.08);
+
+  /* Dark navy solid (buttons, surfaces) */
+  --navy: #010120;
+  --navy-hover: #0a0a3a;
+
+  /* Semantic */
+  --green: #22c55e;
+  --red: #ef4444;
+
+  /* Fonts — Together AI */
+  --font-family-heading: 'Inter', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-family-body: 'Inter', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-family-caption: 'SF Mono', 'SF Pro Mono', 'Cascadia Code', monospace;
+  --font-family-data: 'SF Mono', 'SF Pro Mono', 'Cascadia Code', monospace;
+
+  --font-family: var(--font-family-body);
+
+  /* Sizes */
+  --font-xs: 10px;
+  --font-sm: 11px;
+  --font-caption: 12px;
+  --font-base: 14px;
+  --font-md: 15px;
+  --font-lg: 18px;
+  --font-xl: 24px;
+  --font-2xl: 32px;
+  --font-3xl: 48px;
+  --font-hero: 36px;
+  --font-display: 56px;
+  --font-display-lg: 64px;
+
+  /* Weights — Together AI uses 400-500 range only */
+  --weight-light: 300;
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* Radius — sharp geometry */
+  --radius-none: 0;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-3xl: 24px;
+  --radius-full: 9999px;
+
+  /* Shadow — dark-blue-tinted */
+  --shadow-sm: rgba(1, 1, 32, 0.08) 0px 2px 6px;
+  --shadow-md: rgba(1, 1, 32, 0.1) 0px 4px 10px;
+  --shadow-lg: rgba(1, 1, 32, 0.12) 0px 8px 24px;
+
+  /* Spacing — base 8px */
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-10: 10px;
+  --space-12: 12px;
+  --space-14: 14px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-40: 40px;
+  --space-48: 48px;
+  --space-64: 64px;
+  --space-80: 80px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family-body);
+  font-size: var(--font-base);
+  font-weight: var(--weight-normal);
+  color: var(--text-1);
+  background-color: var(--bg-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.16px;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.markdown-content {
+  white-space: normal;
+}
+
+.markdown-content :deep(h1),
+.markdown-content :deep(h2),
+.markdown-content :deep(h3) {
+  font-family: var(--font-family-heading);
+  letter-spacing: -0.3px;
+  margin-top: var(--space-16);
+  margin-bottom: var(--space-8);
+  font-weight: var(--weight-medium);
+  color: var(--text-1);
+}
+
+.markdown-content :deep(h1) { font-size: var(--font-xl); }
+.markdown-content :deep(h2) { font-size: var(--font-lg); }
+.markdown-content :deep(h3) { font-size: var(--font-md); }
+
+.markdown-content :deep(p) {
+  margin: var(--space-8) 0;
+  color: var(--text-2);
+}
+
+.markdown-content :deep(ul),
+.markdown-content :deep(ol) {
+  margin: var(--space-8) 0;
+  padding-left: var(--space-24);
+  color: var(--text-2);
+}
+
+.markdown-content :deep(code) {
+  background: var(--bg-tertiary);
+  padding: var(--space-2) var(--space-6);
+  font-family: var(--font-family-data);
+  font-size: 0.88em;
+  color: var(--accent);
+}
+
+.markdown-content :deep(pre) {
+  background: var(--bg-secondary);
+  padding: var(--space-16);
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-sm);
+  overflow-x: auto;
+}
+
+.markdown-content :deep(pre code) {
+  background: none;
+  padding: 0;
+  color: var(--text-2);
+}
+
+.markdown-content :deep(a) {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.markdown-content :deep(a:hover) {
+  text-decoration: underline;
+}
+
+.markdown-content :deep(blockquote) {
+  border-left: 2px solid var(--accent);
+  padding-left: var(--space-16);
+  margin: var(--space-12) 0;
+  color: var(--text-3);
+}
+
+/* Element Plus Message — override default green/white to match dark world */
+.el-message {
+  background: #010120 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+  padding: 12px 16px !important;
+}
+
+.el-message .el-message__content {
+  color: rgba(255, 255, 255, 0.87) !important;
+  font-family: var(--font-family-body) !important;
+  font-size: var(--font-sm) !important;
+}
+
+/* Override success icon color from green to brand accent */
+.el-message--success .el-message__icon {
+  color: var(--accent) !important;
+}
+
+/* Override error icon color */
+.el-message--error .el-message__icon {
+  color: var(--red) !important;
+}
+
+/* Override warning icon */
+.el-message--warning .el-message__icon {
+  color: var(--accent-secondary) !important;
+}
+
+/* Remove default border-left colored stripe */
+.el-message--success,
+.el-message--error,
+.el-message--warning,
+.el-message--info {
+  border-left: none !important;
+}
+
+/* Element Plus MessageBox — override default white/blue to match dark world */
+.el-message-box {
+  background: #010120 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+  padding: 0 !important;
+}
+
+.el-message-box__header {
+  padding: 20px 24px 16px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.el-message-box__title {
+  color: rgba(255, 255, 255, 0.87) !important;
+  font-family: var(--font-family-heading) !important;
+  font-size: var(--font-md) !important;
+  font-weight: var(--weight-medium) !important;
+}
+
+.el-message-box__headerbtn .el-message-box__close {
+  color: rgba(255, 255, 255, 0.38) !important;
+  font-size: 18px !important;
+}
+
+.el-message-box__headerbtn:hover .el-message-box__close {
+  color: rgba(255, 255, 255, 0.87) !important;
+}
+
+.el-message-box__content {
+  padding: 20px 24px !important;
+}
+
+.el-message-box__message {
+  color: rgba(255, 255, 255, 0.6) !important;
+  font-family: var(--font-family-body) !important;
+  font-size: var(--font-sm) !important;
+}
+
+.el-message-box__status.el-icon {
+  color: var(--accent-secondary) !important;
+  font-size: 20px !important;
+}
+
+.el-message-box__btns {
+  padding: 16px 24px 20px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+}
+
+.el-message-box__btns .el-button {
+  font-family: var(--font-family-body) !important;
+  font-size: var(--font-sm) !important;
+  border-radius: 4px !important;
+  min-height: 32px !important;
+  padding: 0 16px !important;
+}
+
+.el-message-box__btns .el-button--default {
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.el-message-box__btns .el-button--default:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: rgba(255, 255, 255, 0.87) !important;
+}
+
+.el-message-box__btns .el-button--primary {
+  background: var(--accent-gradient) !important;
+  border: none !important;
+  color: #ffffff !important;
+  font-weight: var(--weight-medium) !important;
+}
+
+.el-message-box__btns .el-button--primary:hover {
+  opacity: 0.85 !important;
+}

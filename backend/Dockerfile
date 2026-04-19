@@ -7,11 +7,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# 复制依赖文件
-COPY pyproject.toml ./
+# 安装 uv
+RUN pip install --no-cache-dir uv
 
-# 安装 Python 依赖
-RUN pip install --no-cache-dir -e .
+# 复制依赖文件
+COPY pyproject.toml uv.lock ./
+
+# 使用 uv 安装 Python 依赖
+RUN uv pip install --system --no-cache-dir -e .
 
 # 复制应用代码
 COPY app/ ./app/

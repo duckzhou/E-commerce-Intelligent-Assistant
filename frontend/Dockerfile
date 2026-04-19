@@ -10,7 +10,8 @@ RUN npm config set registry https://registry.npmmirror.com
 COPY package*.json ./
 
 # 安装所有依赖（包括开发依赖，因为 vite 是 devDependency）
-RUN npm install
+# 使用 --unsafe-perm 解决权限问题
+RUN npm install --unsafe-perm
 
 # 复制源代码
 COPY . .

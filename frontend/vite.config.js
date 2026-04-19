@@ -9,9 +9,10 @@ export default defineConfig(({ mode }) => {
     base: '/',
     server: {
       port: 3000,
+      host: '0.0.0.0',
       proxy: {
         '/api': {
-          target: 'http://localhost:8000',
+          target: 'http://backend:8000',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ''),
           configure: (proxy, options) => {
@@ -28,6 +29,10 @@ export default defineConfig(({ mode }) => {
               }
             });
           }
+        },
+        '/auth': {
+          target: 'http://backend:8000',
+          changeOrigin: true
         }
       }
     },

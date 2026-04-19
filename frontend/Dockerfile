@@ -1,5 +1,5 @@
-# 构建阶段 - 使用国内镜像源
-FROM registry.cn-hangzhou.aliyuncs.com/library/node:18-alpine AS builder
+# 构建阶段
+FROM alibaba-cloud-linux-3-registry.cn-hangzhou.cr.aliyuncs.com/alinux3/node:20.16 AS builder
 
 WORKDIR /app
 
@@ -18,8 +18,8 @@ COPY . .
 # 构建生产版本
 RUN npm run build
 
-# 生产阶段 - 使用国内 nginx 镜像
-FROM registry.cn-hangzhou.aliyuncs.com/library/nginx:alpine
+# 生产阶段
+FROM nginx:alpine
 
 # 复制 Nginx 配置
 COPY nginx.conf /etc/nginx/conf.d/default.conf

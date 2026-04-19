@@ -239,24 +239,11 @@ class ChatService:
             )
             
             # 直接返回拒绝回答
-            yield f"data: {json.dumps({
-                'type': 'chunk', 
-                'content': full_response
-            }, ensure_ascii=False)}\n\n"
+            done_data = json.dumps({'type': 'chunk', 'content': full_response}, ensure_ascii=False)
+            yield f"data: {done_data}\n\n"
             
-            yield f"data: {json.dumps({
-                'type': 'done', 
-                'conversation_id': conversation_id, 
-                'message_id': assistant_msg_id, 
-                'total_time_ms': (time.time() - start_time) * 1000, 
-                'sources': [], 
-                'tokens': {
-                    'prompt_tokens': 0, 
-                    'completion_tokens': len(full_response) // 4, 
-                    'total_tokens': len(full_response) // 4
-                },
-                'rewritten_query': rewritten_query
-            }, ensure_ascii=False)}\n\n"
+            done_data = json.dumps({'type': 'done', 'conversation_id': conversation_id, 'message_id': assistant_msg_id, 'total_time_ms': (time.time() - start_time) * 1000, 'sources': [], 'tokens': {'prompt_tokens': 0, 'completion_tokens': len(full_response) // 4, 'total_tokens': len(full_response) // 4}, 'rewritten_query': rewritten_query}, ensure_ascii=False)
+            yield f"data: {done_data}\n\n"
             return
         
         # 构建提示词

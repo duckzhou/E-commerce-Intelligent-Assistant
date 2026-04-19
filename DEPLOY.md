@@ -1,22 +1,36 @@
-# 阿里云部署指南
+# 阿里云 Docker 部署指南
 
 ## 前置条件
 
-- 阿里云 ECS 服务器（推荐 Ubuntu 20.04/22.04）
+- 阿里云 ECS 服务器（Ubuntu 20.04/22.04 或 CentOS 7/8）
+- 已安装 Docker 和 Docker Compose
 - 已开放安全组端口：80、8000
-- 已获取服务器 SSH 访问权限
+
+## 安装 Docker（如未安装）
+
+### Ubuntu/Debian
+```bash
+curl -fsSL https://get.docker.com | sh
+sudo systemctl enable docker
+sudo systemctl start docker
+```
+
+### CentOS/RHEL
+```bash
+curl -fsSL https://get.docker.com | sh
+sudo systemctl enable docker
+sudo systemctl start docker
+```
+
+### 安装 Docker Compose
+```bash
+sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+```
 
 ## 部署步骤
 
-### 1. 连接服务器
-
-```bash
-ssh root@your-server-ip
-```
-
-### 2. 上传项目代码
-
-**方式一：使用 Git（推荐）**
+### 1. 上传项目代码
 
 ```bash
 cd /opt
@@ -24,107 +38,73 @@ git clone https://github.com/duckzhou/E-commerce-Intelligent-Assistant.git
 cd E-commerce-Intelligent-Assistant
 ```
 
-**方式二：使用 SCP 上传**
-
-在本地执行：
-```bash
-scp -r /path/to/project root@your-server-ip:/opt/ecommerce-assistant
-```
-
-### 3. 修改后端配置
+### 2. 配置环境变量
 
 ```bash
-cd /opt/ecommerce-assistant/backend
-nano .env
+nano backend/.env
 ```
 
-确保 `.env` 文件中的配置正确：
+确保配置正确：
 ```env
-# 通义千问API配置
 DASHSCOPE_API_KEY=your-api-key
 DASHSCOPE_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
 LLM_MODEL=qwen-turbo
 EMBEDDING_MODEL=text-embedding-v3
-
-# 数据库
 DATABASE_URL=sqlite:///./data/app.db
-
-# ChromaDB
 CHROMA_PATH=./data/chroma_db
 ```
 
-### 4. 修改前端 API 地址
+### 3. 一键启动
 
 ```bash
-cd /opt/ecommerce-assistant/frontend
-nano .env.production
+docker-compose up -d
 ```
 
-修改为实际的后端地址：
-```env
-VITE_API_BASE_URL=http://your-server-ip:8000
-```
-
-### 5. 执行部署脚本
+### 4. 查看服务状态
 
 ```bash
-cd /opt/ecommerce-assistant
-chmod +x deploy.sh
-sudo ./deploy.sh
+docker-compose ps
+docker-compose logs -f
 ```
 
-### 6. 检查服务状态
-
-```bash
-# 查看后端服务状态
-systemctl status ecommerce-backend
-
-# 查看前端服务状态
-systemctl status ecommerce-frontend
-
-# 查看后端日志
-journalctl -u ecommerce-backend -f
-```
-
-### 7. 访问应用
+### 5. 访问应用
 
 - 前端：`http://your-server-ip:80`
 - 后端 API：`http://your-server-ip:8000`
 
 ## 常用管理命令
 
-### 重启服务
-
+### 停止服务
 ```bash
-sudo systemctl restart ecommerce-backend
-sudo systemctl restart ecommerce-frontend
+docker-compose down
 ```
 
-### 停止服务
-
+### 重启服务
 ```bash
-sudo systemctl stop ecommerce-backend
-sudo systemctl stop ecommerce-frontend
+docker-compose restart
+```
+
+### 查看日志
+```bash
+# 所有日志
+docker-compose logs -f
+
+# 后端日志
+docker-compose logs -f backend
+
+# 前端日志
+docker-compose logs -f frontend
 ```
 
 ### 更新代码
-
 ```bash
-cd /opt/ecommerce-assistant
 git pull
+docker-compose up -d --build
+```
 
-# 重新部署后端
-cd backend
-source .venv/bin/activate
-pip install -e .
-sudo systemctl restart ecommerce-backend
-
-# 重新构建前端
-cd ../frontend-src
-npm install
-npm run build
-cp -r dist/* /opt/ecommerce-assistant/frontend/
-sudo systemctl restart ecommerce-frontend
+### 清理无用镜像
+```bash
+docker image prune -f
 ```
 
 ## 安全组配置
@@ -134,38 +114,23 @@ sudo systemctl restart ecommerce-frontend
 | 端口 | 协议 | 用途 |
 |------|------|------|
 | 80 | TCP | 前端 HTTP 访问 |
-| 8000 | TCP | 后端 API（可选，仅调试时开放） |
+| 443 | TCP | HTTPS（可选） |
 | 22 | TCP | SSH 远程管理 |
 
 ## 故障排查
 
-### 后端启动失败
-
+### 容器启动失败
 ```bash
-# 查看详细日志
-journalctl -u ecommerce-backend -n 50 --no-pager
-
-# 手动启动测试
-cd /opt/ecommerce-assistant/backend
-source .venv/bin/activate
-uvicorn app.main:app --host 0.0.0.0 --port 8000
+docker-compose logs backend
+docker-compose logs frontend
 ```
 
-### 前端无法访问
-
+### 进入容器调试
 ```bash
-# 检查前端服务
-systemctl status ecommerce-frontend
-
-# 检查文件是否存在
-ls -la /opt/ecommerce-assistant/frontend/
+docker exec -it ecommerce-backend sh
+docker exec -it ecommerce-frontend sh
 ```
 
-### API 请求失败
-
+### 检查后端 API
 ```bash
-# 测试后端 API
 curl http://localhost:8000/docs/
-
-# 检查防火墙
-sudo ufw status

@@ -127,14 +127,15 @@ class ChatService:
         self,
         query: str,
         conversation_id: Optional[str] = None,
-        context_messages: Optional[List[dict]] = None
+        context_messages: Optional[List[dict]] = None,
+        user_id: Optional[str] = None
     ) -> dict:
         """处理用户查询"""
         start_time = time.time()
         
         # 获取或创建对话
         if not conversation_id:
-            conversation_id = self._create_conversation(query)
+            conversation_id = self._create_conversation(query, user_id)
         
         # Query 改写
         rewrite_start = time.time()
@@ -196,14 +197,15 @@ class ChatService:
         self,
         query: str,
         conversation_id: Optional[str] = None,
-        context_messages: Optional[List[dict]] = None
+        context_messages: Optional[List[dict]] = None,
+        user_id: Optional[str] = None
     ) -> AsyncGenerator[str, None]:
         """流式处理用户查询"""
         start_time = time.time()
         
         # 获取或创建对话
         if not conversation_id:
-            conversation_id = self._create_conversation(query)
+            conversation_id = self._create_conversation(query, user_id)
         
         # Query 改写
         rewrite_start = time.time()
@@ -333,13 +335,14 @@ class ChatService:
         except Exception as e:
             yield f"data: {json.dumps({'type': 'error', 'message': str(e)}, ensure_ascii=False)}\n\n"
     
-    def _create_conversation(self, title: str) -> str:
+    def _create_conversation(self, title: str, user_id: Optional[str] = None) -> str:
         """创建新对话"""
         import uuid
         db = SessionLocal()
         try:
             conv = Conversation(
                 id=str(uuid.uuid4()),
+                user_id=user_id,
                 title=title[:50]
             )
             db.add(conv)

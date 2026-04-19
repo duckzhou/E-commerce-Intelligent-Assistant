@@ -11,6 +11,20 @@ const api = axios.create({
   }
 })
 
+// 请求拦截器 - 自动添加 token
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
+
 // 获取会话列表
 export const getConversations = () => api.get('/conversations/')
 
@@ -35,12 +49,18 @@ export const updateMessageFeedback = (messageId, feedback) => api.put(`/conversa
 // 流式聊天
 export const streamChat = async (query, conversationId, onChunk, onDone, onError) => {
   try {
+    const token = localStorage.getItem('token')
+    const headers = { 
+      'Content-Type': 'application/json',
+      'Accept': 'text/event-stream'
+    }
+    if (token) {
+      headers.Authorization = `Bearer ${token}`
+    }
+    
     const response = await fetch(`${API_BASE_URL}/chat/stream`, {
       method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Accept': 'text/event-stream'
-      },
+      headers: headers,
       body: JSON.stringify({ query, conversation_id: conversationId })
     })
 

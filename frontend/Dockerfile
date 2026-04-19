@@ -6,11 +6,11 @@ WORKDIR /app
 # 配置 npm 使用国内镜像
 RUN npm config set registry https://registry.npmmirror.com
 
-# 复制依赖文件
-COPY package*.json ./
+# 只复制 package.json（不复制 package-lock.json 避免权限问题）
+COPY package.json ./
 
 # 安装所有依赖（包括开发依赖，因为 vite 是 devDependency）
-RUN npm install --allow-root
+RUN npm install
 
 # 复制源代码
 COPY . .

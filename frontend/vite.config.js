@@ -30,6 +30,8 @@ export default defineConfig(({ mode }) => {
                 proxyRes.headers['X-Accel-Buffering'] = 'no';
                 proxyRes.headers['Cache-Control'] = 'no-cache';
                 proxyRes.headers['Connection'] = 'keep-alive';
+                proxyRes.headers['Content-Type'] = 'text/event-stream';
+                proxyRes.headers['Transfer-Encoding'] = 'chunked';
               }
             });
           }

@@ -52,11 +52,16 @@ export const streamChat = async (query, conversationId, onChunk, onDone, onError
     const token = localStorage.getItem('token')
     const headers = { 
       'Content-Type': 'application/json',
-      'Accept': 'text/event-stream'
+      'Accept': 'text/event-stream',
+      'Cache-Control': 'no-cache'
     }
     if (token) {
       headers.Authorization = `Bearer ${token}`
     }
+    
+    console.log('[streamChat] Request URL:', `${API_BASE_URL}/chat/stream`)
+    console.log('[streamChat] Token:', token ? 'exists' : 'missing')
+    console.log('[streamChat] Headers:', headers)
     
     const response = await fetch(`${API_BASE_URL}/chat/stream`, {
       method: 'POST',
@@ -64,8 +69,13 @@ export const streamChat = async (query, conversationId, onChunk, onDone, onError
       body: JSON.stringify({ query, conversation_id: conversationId })
     })
 
+    console.log('[streamChat] Response status:', response.status)
+    console.log('[streamChat] Response headers:', Object.fromEntries(response.headers.entries()))
+    
     if (!response.ok) {
-      throw new Error(`HTTP error: ${response.status}`)
+      const errorText = await response.text()
+      console.error('[streamChat] Error response:', errorText)
+      throw new Error(`HTTP error: ${response.status} - ${errorText}`)
     }
 
     const reader = response.body.getReader()

@@ -51,9 +51,18 @@ class LoginRequest(BaseModel):
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
     """获取当前登录用户"""
-    # 简化版：直接使用 token 作为 session_id 查找用户
+    # 简化版：token 就是用户ID
     # 实际生产环境应该使用 JWT 解码
-    user = db.query(User).filter(User.id == token).first()
+    try:
+        user_id = int(token)
+    except (ValueError, TypeError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="无效的认证令牌",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

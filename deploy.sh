@@ -22,8 +22,23 @@ fi
 # 1. 安装系统依赖
 echo ""
 echo "[1/6] 安装系统依赖..."
-apt update
-apt install -y python3 python3-pip python3-venv nodejs npm git curl
+
+# 检测系统类型
+if command -v apt &> /dev/null; then
+    echo "检测到 Debian/Ubuntu 系统"
+    apt update
+    apt install -y python3 python3-pip python3-venv nodejs npm git curl
+elif command -v yum &> /dev/null; then
+    echo "检测到 CentOS/RHEL 系统"
+    yum update -y
+    yum install -y python3 python3-pip git curl
+    # CentOS 可能需要安装 EPEL 源来获取 nodejs
+    yum install -y epel-release
+    yum install -y nodejs npm
+else
+    echo "不支持的系统，请手动安装依赖"
+    exit 1
+fi
 
 # 2. 创建应用目录
 echo ""

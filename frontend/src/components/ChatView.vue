@@ -258,9 +258,17 @@ async function sendMessage() {
   scrollToBottom()
   emit('send', query)
 
+  let scrollCounter = 0
   await streamChat(
     query, props.conversationId,
-    (content) => { messages.value[idx].content += content; scrollToBottom() },
+    (content) => {
+      messages.value[idx].content += content
+      // 减少滚动频率，每5个chunk滚动一次
+      scrollCounter++
+      if (scrollCounter % 5 === 0) {
+        scrollToBottom()
+      }
+    },
     (data) => {
       isLoading.value = false
       messages.value[idx].loading = false

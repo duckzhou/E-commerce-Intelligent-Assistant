@@ -78,16 +78,27 @@ export const streamChat = async (query, conversationId, onChunk, onDone, onError
       throw new Error(`HTTP error: ${response.status} - ${errorText}`)
     }
 
+    // 检查是否支持流式读取
+    if (!response.body || !response.body.getReader) {
+      throw new Error('浏览器不支持流式响应，请使用现代浏览器')
+    }
+
     const reader = response.body.getReader()
     const decoder = new TextDecoder()
     let buffer = ''
+    let chunkCount = 0
 
     while (true) {
       const { done, value } = await reader.read()
-      if (done) break
+      if (done) {
+        console.log('[streamChat] Stream done, total chunks:', chunkCount)
+        break
+      }
 
+      chunkCount++
       // 解码新接收的数据
       const text = decoder.decode(value, { stream: true })
+      console.log('[streamChat] Received chunk:', text.substring(0, 100))
       buffer += text
       
       // 按行处理
@@ -103,6 +114,7 @@ export const streamChat = async (query, conversationId, onChunk, onDone, onError
             if (data.type === 'chunk') {
               onChunk(data.content)
             } else if (data.type === 'done') {
+              console.log('[streamChat] Stream finished')
               onDone(data)
               return
             } else if (data.type === 'error') {
@@ -115,6 +127,10 @@ export const streamChat = async (query, conversationId, onChunk, onDone, onError
         }
       }
     }
+    
+    // 如果流结束但没有收到 done 事件，调用 onDone
+    console.log('[streamChat] Stream ended without done event')
+    onDone({})
   } catch (error) {
     onError(error.message)
   }

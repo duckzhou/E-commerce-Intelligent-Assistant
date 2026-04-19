@@ -282,6 +282,9 @@ class ChatService:
                 # 让出控制权，确保流式输出
                 await asyncio.sleep(0)
             
+            # 确保最后刷新缓冲区
+            yield f"data: {json.dumps({'type': 'flush'}, ensure_ascii=False)}\n\n"
+            
             # 估算 prompt tokens（系统提示词 + 用户输入 + 检索内容）
             prompt_tokens = len(system_prompt.encode('utf-8')) // 4 + len(query.encode('utf-8')) // 4
             for msg in (context_messages or []):
